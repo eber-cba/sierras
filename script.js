@@ -527,9 +527,13 @@ function calculateBalances(data) {
 
         case "peaje":
         case "nafta":
-          // Las conductoras no deben pagar por estos gastos
-          validExpenses.userContributions[user].total += item.precio;
-          validExpenses.userContributions[user].items.push(item.item);
+          // Solo los usuarios del vehículo correspondiente deben pagar
+          if (user === "Josefina" || user === "Aldi") {
+            validExpenses.userContributions[user].total += item.precio;
+            validExpenses.userContributions[user].items.push(item.item);
+          } else {
+            return; // No contar para otros usuarios
+          }
           break;
       }
     }
@@ -570,6 +574,29 @@ function calculateBalances(data) {
             if (users[user].isDriver && contributions.alcDrinks > 0) {
               return; // No deben nada si son conductoras y el acreedor compró alcohol
             }
+
+            // Verificar si el usuario que debe es de un vehículo diferente
+            if (
+              (user === "Josefina" || user === "Aldi") &&
+              creditor !== "Josefina" &&
+              creditor !== "Aldi"
+            ) {
+              return; // No deben por combustible si no son conductores del mismo vehículo
+            }
+
+            // Verificar si el usuario que debe es del mismo vehículo que el acreedor
+            if (
+              (user === "Gabi" || user === "Jere" || user === "Eber") &&
+              (creditor === "Josefina" || creditor === "Aldi")
+            ) {
+              return; // Gabi, Jere y Eber no deben a las conductoras por combustible
+            }
+
+            // Verificar si Josefina debe a Aldi por combustible
+            if (user === "Josefina" && creditor === "Aldi") {
+              return; // Josefina no debe a Aldi por combustible
+            }
+
             const creditorShare =
               (contributions.total /
                 (validExpenses.totalFood +
@@ -577,7 +604,13 @@ function calculateBalances(data) {
                   validExpenses.totalAlcDrinks +
                   validExpenses.totalOthers)) *
               amountOwed;
-            debts[user].push({ creditor, amount: creditorShare.toFixed(2) });
+
+            // Añadir la razón de la deuda
+            debts[user].push({
+              creditor,
+              amount: creditorShare.toFixed(2),
+              reason: contributions.items.join(", "), // Razón de la deuda
+            });
           }
         }
       );
@@ -641,10 +674,10 @@ function renderPurchaseDetails() {
     purchaseDetailsHTML += '<div class="balances">';
     Object.entries(debts).forEach(([user, debtList]) => {
       if (debtList.length > 0) {
-        debtList.forEach(({ creditor, amount }) => {
+        debtList.forEach(({ creditor, amount, reason }) => {
           purchaseDetailsHTML += `
             <div class="debt">
-              <strong>${users[user].icon} ${user}</strong> debe: <strong>$${amount}</strong> a <strong>${creditor}</strong>
+              <strong>${users[user].icon} ${user}</strong> debe: <strong>$${amount}</strong> a <strong>${creditor}</strong> por: ${reason}
             </div>
           `;
         });
