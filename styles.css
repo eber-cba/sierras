@@ -1,0 +1,319 @@
+:root {
+  --color-verde: #36ba98;
+  --color-amarillo: #e9c46a;
+  --color-naranja: #f4a261;
+  --color-rojo: #e76f51;
+  --summer-yellow: #fff3b0;
+  --summer-orange: #ff6b35;
+  --summer-blue: #5da9e9;
+  --summer-green: #6a994e;
+}
+body {
+  font-family: "Comic Neue", cursive;
+  background: linear-gradient(45deg, #e9c46a, #f4a261);
+  margin: 0;
+  padding: 20px;
+  color: #2f3e46;
+}
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+}
+.title {
+  text-align: center;
+  color: var(--color-rojo);
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 0px white;
+}
+.cars {
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.reminders {
+  background: #ffd6a5;
+  padding: 15px;
+  border-radius: 15px;
+  margin: 20px 0;
+  border: 2px dashed var(--summer-orange);
+}
+.profile-container {
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.category-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+.tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: var(--summer-blue);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.tab:hover {
+  background: var(--summer-green);
+}
+.active-tab {
+  background: var(--summer-orange);
+}
+.form-container {
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+input,
+select,
+button {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: 2px solid var(--summer-green);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+button {
+  background: var(--summer-green);
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover {
+  background: var(--summer-orange);
+}
+.item-list {
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.item {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.item div:first-child {
+  max-width: 65%;
+}
+.item-actions button {
+  margin-left: 5px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+.item-actions button:hover {
+  opacity: 0.8;
+}
+.accordion {
+  border: 1px solid var(--summer-blue);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.accordion-header {
+  background: var(--summer-green);
+  padding: 10px;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  transition: background 0.3s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.accordion-header:hover {
+  background: var(--summer-orange);
+}
+.accordion-content {
+  display: none;
+  padding: 10px;
+  background: white;
+}
+.accordion-content.active {
+  display: block;
+}
+.purchase-item {
+  margin: 5px 0;
+}
+.accordion-button {
+  background: var(--summer-blue);
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+  text-align: left;
+  transition: background 0.3s;
+}
+.accordion-button:hover {
+  background: var(--summer-green);
+}
+.total-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: var(--summer-yellow);
+  border-radius: 10px;
+  border: 2px dashed var(--summer-orange);
+}
+.division-section {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 2px solid var(--summer-blue);
+}
+.user-balance {
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.blurred {
+  filter: blur(8px);
+  pointer-events: none;
+  transition: filter 0.3s ease;
+}
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1em;
+  margin-top: 10px;
+}
+.custom-checkbox input[type="checkbox"] {
+  transform: scale(1.5);
+  accent-color: var(--summer-green);
+}
+.registered-profiles {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.profile-item {
+  padding: 5px;
+  margin: 5px 0;
+  border-bottom: 1px solid #ddd;
+}
+.profile-item:last-child {
+  border-bottom: none;
+}
+.custom-radio {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.custom-radio label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px;
+  border: 2px solid var(--summer-green);
+  border-radius: 8px;
+  transition: background 0.3s, border 0.3s;
+}
+.custom-radio input[type="radio"] {
+  display: none;
+}
+.radio-button {
+  margin-left: 10px;
+}
+.custom-radio input[type="radio"]:checked + .radio-button {
+  background: var(--summer-green);
+  color: white;
+  border-color: var(--summer-orange);
+}
+.radio-button::before {
+  content: "🍹";
+  margin-right: 5px;
+}
+.radio-button:nth-of-type(2)::before {
+  content: "🚫";
+}
+.selected {
+  background-color: #ffd6a5;
+}
+/* Estilos para la sección de detalles de compras */
+.user-details {
+  background: #f0f8ff; /* Color más claro y atractivo */
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid var(--color-verde); /* Color llamativo */
+}
+
+.user-details h5 {
+  margin: 0;
+  color: var(--color-rojo);
+  text-align: center; /* Centrar el título */
+}
+
+.user-details p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.items-list {
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.purchase-item {
+  margin: 5px 0;
+  padding: 5px;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para el resumen de la división */
+#purchaseList p {
+  font-weight: bold;
+  color: var(--color-verde); /* Color llamativo para el resumen */
+}
+
+/* Estilo para la sección de deudas */
+#purchaseList h5 {
+  color: var(--color-rojo); /* Color llamativo para la sección de deudas */
+}
+
+#purchaseList p {
+  margin: 5px 0;
+  color: #333; /* Color más oscuro para el texto de deudas */
+}
+
+/* Estilos para los íconos */
+.icon {
+  margin-right: 5px; /* Espacio entre el ícono y el texto */
+  vertical-align: middle; /* Alinear verticalmente el ícono */
+}
