@@ -1,4 +1,4 @@
-// Configuración de Firebase (para los gastos)
+// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCmM2Sj7_MVEDDaX-Ob1iUizHzm3Nuln00",
   authDomain: "sierras-6809e.firebaseapp.com",
@@ -16,8 +16,6 @@ const database = firebase.database();
 let currentCategory = "comida";
 let editingId = null;
 
-// Listado de usuarios predefinidos
-// Se asume que todos consumieron alcohol, excepto las conductoras (Josefina y Aldi)
 const users = {
   Gabi: { color: "#ffadad", icon: "🐱" },
   Jere: { color: "#a0c4ff", icon: "🐶" },
@@ -28,9 +26,6 @@ const users = {
   Aldi: { color: "#ffc6ff", icon: "🐧", isDriver: true },
   Fer: { color: "#a8dadc", icon: "👨‍🔧" },
 };
-
-/* ------------------------------------------------------------------------------------------ */
-// Funciones para el formulario y manejo de gastos
 
 function showCategory(category, e) {
   currentCategory = category;
@@ -47,7 +42,6 @@ function renderForm() {
   let generalFormHTML = "";
   let buttonText = "Agregar 🐾";
 
-  // Para categorías que requieren seleccionar un usuario (comida, bebidas, otros, etc.)
   if (
     !["peaje", "nafta", "estacionamiento", "nuevoItem"].includes(
       currentCategory
@@ -61,25 +55,21 @@ function renderForm() {
             ([name, data]) => `
           <option value="${name}" style="background: ${data.color}">
             ${data.icon} ${name}
-          </option>
-        `
+          </option>`
           )
           .join("")}
       </select>
       <input type="text" id="itemDesc" placeholder="¿Qué compró?" />
-      <input type="number" id="itemPrice" placeholder="Precio $" />
-    `;
+      <input type="number" id="itemPrice" placeholder="Precio $" />`;
   }
 
-  // Campos específicos según la categoría
   if (currentCategory === "bebidas") {
     extraHTML = `
       <select id="alcoholSelect">
         <option value="" disabled selected>¿Contiene alcohol?</option>
         <option value="true">Con alcohol</option>
         <option value="false">Sin alcohol</option>
-      </select>
-    `;
+      </select>`;
   } else if (currentCategory === "peaje") {
     extraHTML = `
       <select id="carSelect">
@@ -93,13 +83,11 @@ function renderForm() {
             ([name, data]) => `
           <option value="${name}" style="background: ${data.color}">
             ${data.icon} ${name}
-          </option>
-        `
+          </option>`
           )
           .join("")}
       </select>
-      <input type="number" id="tollPrice" placeholder="Costo del peaje $" />
-    `;
+      <input type="number" id="tollPrice" placeholder="Costo del peaje $" />`;
     buttonText = "Guardar 🛣️";
   } else if (currentCategory === "estacionamiento") {
     extraHTML = `
@@ -114,13 +102,11 @@ function renderForm() {
             ([name, data]) => `
           <option value="${name}" style="background: ${data.color}">
             ${data.icon} ${name}
-          </option>
-        `
+          </option>`
           )
           .join("")}
       </select>
-      <input type="number" id="parkingPrice" placeholder="Costo del estacionamiento $" />
-    `;
+      <input type="number" id="parkingPrice" placeholder="Costo del estacionamiento $" />`;
     buttonText = "Guardar 🅿️";
   } else if (currentCategory === "nafta") {
     extraHTML = `
@@ -128,23 +114,19 @@ function renderForm() {
         <option value="Josefina">🚗 Auto de Josefina</option>
         <option value="Aldi">🚙 Auto de Aldi</option>
       </select>
-      <input type="number" id="naftaPrice" placeholder="Monto gastado $" />
-    `;
+      <input type="number" id="naftaPrice" placeholder="Monto gastado $" />`;
     buttonText = "Guardar ⛽";
   } else if (currentCategory === "nuevoItem") {
     extraHTML = `
       <input type="text" id="newItemDesc" placeholder="Descripción del nuevo ítem" />
-      <input type="number" id="newItemPrice" placeholder="Precio del nuevo ítem $" />
-    `;
+      <input type="number" id="newItemPrice" placeholder="Precio del nuevo ítem $" />`;
     buttonText = "Agregar Nuevo Ítem";
   }
 
-  const formHTML = `
+  document.getElementById("dynamicForm").innerHTML = `
     ${generalFormHTML}
     ${extraHTML}
-    <button onclick="saveItem()" id="saveButton">${buttonText}</button>
-  `;
-  document.getElementById("dynamicForm").innerHTML = formHTML;
+    <button onclick="saveItem()" id="saveButton">${buttonText}</button>`;
 }
 
 function saveItem() {
@@ -174,6 +156,7 @@ function saveItem() {
 
   let selectedUser;
   let extraData = {};
+
   if (currentCategory === "peaje") {
     const selectedCar = document.getElementById("carSelect").value;
     selectedUser = document.getElementById("peajeUserSelect").value;
@@ -234,9 +217,9 @@ function saveItem() {
         drawItems();
         clearForm();
       })
-      .catch((error) => {
-        console.error("Error al guardar el item en Firebase:", error);
-      });
+      .catch((error) =>
+        console.error("Error al guardar el item en Firebase:", error)
+      );
   }
 }
 
@@ -307,22 +290,20 @@ function clearForm() {
   }
 }
 
-/* ------------------------------------------------------------------------------------------ */
-// Función para actualizar la división de gastos en tiempo real
-
 function updatePurchaseList() {
   database.ref("gastos").once("value", (snapshot) => {
     const data = snapshot.val() || {};
 
-    // --- GASTOS DE AUTO (Peaje, Estacionamiento y Combustible) ---
     const carGroups = {
       Josefina: {
+        driver: "Josefina",
         members: ["Gabi", "Jere", "Eber"],
         fuelTotal: 0,
         autoExpenses: [],
         totalPaid: 0,
       },
       Aldi: {
+        driver: "Aldi",
         members: ["Eva", "Carito", "Fer"],
         fuelTotal: 0,
         autoExpenses: [],
@@ -330,105 +311,110 @@ function updatePurchaseList() {
       },
     };
 
-    // Objeto para acumular lo que cada usuario pagó en auto
     let autoPaid = {};
     Object.values(carGroups).forEach((group) => {
-      group.members.forEach((m) => {
-        autoPaid[m] = 0;
-      });
+      group.members.forEach((m) => (autoPaid[m] = 0));
+      autoPaid[group.driver] = 0;
     });
 
-    // Procesar los gastos
     for (let id in data) {
       const item = data[id];
       if (item.categoria === "nafta") {
-        if (carGroups.hasOwnProperty(item.nombre)) {
-          carGroups[item.nombre].fuelTotal += item.precio;
-          autoPaid[item.nombre] += item.precio;
-          carGroups[item.nombre].totalPaid += item.precio;
+        const car = item.nombre;
+        if (carGroups[car]) {
+          carGroups[car].fuelTotal += item.precio;
+          autoPaid[carGroups[car].driver] += item.precio;
         }
-      } else if (
-        item.categoria === "peaje" ||
-        item.categoria === "estacionamiento"
-      ) {
-        if (carGroups.hasOwnProperty(item.car)) {
-          carGroups[item.car].autoExpenses.push({
+      } else if (["peaje", "estacionamiento"].includes(item.categoria)) {
+        const car = item.car;
+        if (carGroups[car]) {
+          carGroups[car].autoExpenses.push({
             payer: item.nombre,
             amount: item.precio,
             type: item.categoria,
           });
-          autoPaid[item.nombre] = (autoPaid[item.nombre] || 0) + item.precio;
-          carGroups[item.car].totalPaid += item.precio;
+          autoPaid[item.nombre] += item.precio;
         }
       }
     }
 
-    // Construir el HTML
-    let autoDivisionHtml = `<div class="division-section">
-      <h3>🚗 Gastos de Auto</h3>`;
+    let autoDivisionHtml = `<div class="division-section"><h3>🚗 Gastos de Auto</h3>`;
 
     for (let car in carGroups) {
       const group = carGroups[car];
-      const members = group.members;
-      const numMembers = members.length;
-      const shareFuel = numMembers > 0 ? group.fuelTotal / numMembers : 0;
+      const numMembers = group.members.length;
+      const shareFuel = group.fuelTotal / numMembers;
+
+      let expectedAuto = {};
+      group.members.forEach((m) => (expectedAuto[m] = shareFuel));
+
+      group.autoExpenses.forEach((exp) => {
+        const share = exp.amount / numMembers;
+        group.members.forEach((m) => {
+          if (m !== exp.payer) expectedAuto[m] += share;
+        });
+      });
 
       autoDivisionHtml += `
-        <div class="fuel-total">
-          <h4>${
-            car === "Josefina" ? "Auto de Josefina" : "Auto de Aldi"
-          } - Combustible total: $${group.fuelTotal.toFixed(2)}</h4>
-          <div class="division-explanation">
-            <p>🔧 División de gastos para ${members.join(", ")}:</p>
-            <p>• Combustible: $${group.fuelTotal.toFixed(
-              2
-            )} / ${numMembers} pasajeros = $${shareFuel.toFixed(
+        <div class="car-group">
+          <h4>${group.driver} - ${group.members.join(", ")}</h4>
+          <div class="expense-breakdown">
+            <p><strong>Combustible:</strong> $${group.fuelTotal.toFixed(2)}</p>
+            <p>Dividido entre ${numMembers} pasajeros: $${shareFuel.toFixed(
         2
-      )} por persona</p>
-            ${group.autoExpenses
-              .map(
-                (exp) => `
-              <p>• ${exp.type} (Pagado por ${exp.payer}): 
-                $${exp.amount.toFixed(2)} dividido entre ${
-                  numMembers - 1
-                } pasajeros = $${(exp.amount / (numMembers - 1)).toFixed(2)} c/u
-              </p>`
-              )
-              .join("")}
-            <p>🍔 Comida/Bebidas: Cada persona paga individualmente lo que consumió</p>
-            <p>💡 Los pagos de cada persona en otras categorías se tienen en cuenta para el balance final</p>
+      )} c/u</p>`;
+
+      if (group.autoExpenses.length > 0) {
+        autoDivisionHtml += `<p><strong>Otros gastos:</strong></p>`;
+        group.autoExpenses.forEach((exp) => {
+          const share = exp.amount / numMembers;
+          autoDivisionHtml += `
+            <p>${exp.type} pagado por ${exp.payer}: 
+            $${exp.amount.toFixed(2)} ($${share.toFixed(2)} por pasajero)</p>`;
+        });
+      }
+
+      autoDivisionHtml += `</div><div class="member-balances">`;
+
+      group.members.forEach((m) => {
+        const paid = autoPaid[m] || 0;
+        const expected = expectedAuto[m];
+        const balance = paid - expected;
+
+        autoDivisionHtml += `
+          <div class="user-balance" style="background: ${users[m].color}40">
+            <div>
+              <strong>${users[m].icon} ${m}</strong><br>
+              Pagado: $${paid.toFixed(2)}<br>
+              Esperado: $${expected.toFixed(2)}
+            </div>
+            <div class="balance-amount">
+              ${balance >= 0 ? "A favor" : "Debe"}:<br>
+              $${Math.abs(balance).toFixed(2)}
+            </div>
+          </div>`;
+      });
+
+      const driverPaid = autoPaid[group.driver];
+      const driverBalance = driverPaid - group.fuelTotal;
+
+      autoDivisionHtml += `
+        <div class="user-balance driver" style="background: ${
+          users[group.driver].color
+        }40">
+          <div>
+            <strong>${users[group.driver].icon} ${
+        group.driver
+      } (Conductor)</strong><br>
+            Total combustible pagado: $${driverPaid.toFixed(2)}<br>
+            A recuperar de pasajeros: $${group.fuelTotal.toFixed(2)}
           </div>
-        </div>
-
-        <div class="members-balance">
-          ${members
-            .map((member) => {
-              const expected =
-                shareFuel +
-                group.autoExpenses
-                  .filter((exp) => exp.payer !== member)
-                  .reduce((sum, exp) => sum + exp.amount / (numMembers - 1), 0);
-
-              const paid = autoPaid[member] || 0;
-              const diff = paid - expected;
-
-              return `<div class="user-balance" style="background: ${
-                users[member].color
-              }20">
-              <div>
-                ${users[member].icon} ${member}<br>
-                Pagado: $${paid.toFixed(2)}<br>
-                Debe: $${expected.toFixed(2)}
-              </div>
-              <div class="${diff >= 0 ? "positive" : "negative"}">
-                ${diff >= 0 ? "A favor" : "A pagar"}: $${Math.abs(diff).toFixed(
-                2
-              )}
-              </div>
-            </div>`;
-            })
-            .join("")}
+          <div class="balance-amount">
+            Balance final: $${(driverPaid - group.fuelTotal).toFixed(2)}
+          </div>
         </div>`;
+
+      autoDivisionHtml += `</div></div>`;
     }
 
     autoDivisionHtml += `</div>`;
@@ -436,7 +422,6 @@ function updatePurchaseList() {
   });
 }
 
-// Función para calcular balances
 function calculateBalances(data) {
   let validExpenses = {
     totalFood: 0,
@@ -446,7 +431,6 @@ function calculateBalances(data) {
     userContributions: {},
   };
 
-  // Inicializar contribuciones
   Object.keys(users).forEach((user) => {
     validExpenses.userContributions[user] = {
       food: 0,
@@ -454,18 +438,13 @@ function calculateBalances(data) {
       alcDrinks: 0,
       others: 0,
       total: 0,
-      items: [], // Para almacenar los elementos comprados
+      items: [],
     };
   });
 
-  // Calcular gastos válidos
   Object.values(data).forEach((item) => {
     const user = item.nombre;
-
-    // Excluir a Aldi de los gastos de comida
-    if (user === "Aldi" && item.categoria === "comida") {
-      return; // No contar los gastos de comida de Aldi
-    }
+    if (user === "Aldi" && item.categoria === "comida") return;
 
     if (
       ["comida", "bebidas", "otros", "peaje", "nafta"].includes(item.categoria)
@@ -503,25 +482,18 @@ function calculateBalances(data) {
 
         case "peaje":
         case "nafta":
-          // Solo los usuarios del vehículo correspondiente deben pagar
           if (user === "Josefina" || user === "Aldi") {
             validExpenses.userContributions[user].total += item.precio;
             validExpenses.userContributions[user].items.push(item.item);
-          } else {
-            return; // No contar para otros usuarios
           }
           break;
       }
     }
   });
 
-  // Calcular deudas
   const balances = {};
-  Object.keys(users).forEach((user) => {
-    balances[user] = 0; // Inicializar saldo
-  });
+  Object.keys(users).forEach((user) => (balances[user] = 0));
 
-  // Calcular cuánto debe cada usuario a los demás
   Object.entries(validExpenses.userContributions).forEach(
     ([user, contributions]) => {
       const totalPaid = contributions.total;
@@ -531,13 +503,10 @@ function calculateBalances(data) {
           validExpenses.totalAlcDrinks +
           validExpenses.totalOthers) /
         Object.keys(users).length;
-
-      const balance = totalPaid - totalShare;
-      balances[user] = balance; // Guardar el saldo del usuario
+      balances[user] = totalPaid - totalShare;
     }
   );
 
-  // Crear un objeto para mostrar a quién debe cada usuario
   const debts = {};
   Object.keys(users).forEach((user) => {
     debts[user] = [];
@@ -546,32 +515,25 @@ function calculateBalances(data) {
       Object.entries(validExpenses.userContributions).forEach(
         ([creditor, contributions]) => {
           if (balances[creditor] > 0) {
-            // Asegurarse de que las conductoras no deban a quienes compraron bebidas con alcohol
-            if (users[user].isDriver && contributions.alcDrinks > 0) {
-              return; // No deben nada si son conductoras y el acreedor compró alcohol
+            if (users[user].isDriver && users[creditor].isDriver) {
+              const isFuelDebt = contributions.items.some((item) =>
+                item.toLowerCase().includes("combustible")
+              );
+              if (isFuelDebt) return;
             }
 
-            // Verificar si el usuario que debe es de un vehículo diferente
             if (
               (user === "Josefina" || user === "Aldi") &&
               creditor !== "Josefina" &&
               creditor !== "Aldi"
-            ) {
-              return; // No deben por combustible si no son conductores del mismo vehículo
-            }
+            )
+              return;
 
-            // Verificar si el usuario que debe es del mismo vehículo que el acreedor
             if (
               (user === "Gabi" || user === "Jere" || user === "Eber") &&
               (creditor === "Josefina" || creditor === "Aldi")
-            ) {
-              return; // Gabi, Jere y Eber no deben a las conductoras por combustible
-            }
-
-            // Verificar si Josefina debe a Aldi por combustible
-            if (user === "Josefina" && creditor === "Aldi") {
-              return; // Josefina no debe a Aldi por combustible
-            }
+            )
+              return;
 
             const creditorShare =
               (contributions.total /
@@ -581,11 +543,10 @@ function calculateBalances(data) {
                   validExpenses.totalOthers)) *
               amountOwed;
 
-            // Añadir la razón de la deuda
             debts[user].push({
               creditor,
               amount: creditorShare.toFixed(2),
-              reason: contributions.items.join(", "), // Razón de la deuda
+              reason: contributions.items.join(", "),
             });
           }
         }
@@ -596,7 +557,6 @@ function calculateBalances(data) {
   return { validExpenses, balances, debts };
 }
 
-// Función para renderizar los detalles de compras
 function renderPurchaseDetails() {
   const dbRef = firebase.database().ref("gastos");
   dbRef.once("value", (snapshot) => {
@@ -617,10 +577,8 @@ function renderPurchaseDetails() {
           )}</p>
           <p>Otros: $${validExpenses.totalOthers.toFixed(2)}</p>
         </div>
-    `;
+        <div class="user-cards">`;
 
-    // Tarjetas de usuarios
-    purchaseDetailsHTML += '<div class="user-cards">';
     Object.entries(users).forEach(([user, data]) => {
       const contributions = validExpenses.userContributions[user];
       purchaseDetailsHTML += `
@@ -641,43 +599,34 @@ function renderPurchaseDetails() {
             2
           )}</strong></p>
           <p>Elementos comprados: ${contributions.items.join(", ")}</p>
-        </div>
-      `;
+        </div>`;
     });
-    purchaseDetailsHTML += "</div>";
 
-    // Deudas
-    purchaseDetailsHTML += '<div class="balances">';
+    purchaseDetailsHTML += `</div><div class="balances">`;
+
     Object.entries(debts).forEach(([user, debtList]) => {
       if (debtList.length > 0) {
         debtList.forEach(({ creditor, amount, reason }) => {
           purchaseDetailsHTML += `
             <div class="debt">
-              <strong>${users[user].icon} ${user}</strong> debe: <strong>$${amount}</strong> a <strong>${creditor}</strong> por: ${reason}
-            </div>
-          `;
+              <strong>${users[user].icon} ${user}</strong> debe: 
+              <strong>$${amount}</strong> a 
+              <strong>${creditor}</strong> por: ${reason}
+            </div>`;
         });
       }
     });
 
-    purchaseDetailsHTML += "</div></div>";
-
-    // Sección de aclaraciones
-    purchaseDetailsHTML += `
+    purchaseDetailsHTML += `</div></div>
       <div class="aclaraciones">
         <h4 style="color: var(--color-titulo);">💖 Aclaraciones</h4>
-        <p>Las deudas mostradas son solo para comida y bebidas.</p>
-        <p>Las conductoras no cuentan las bebidas con alcohol, pero sí las sin alcohol.</p>
-        <p>La comida se cuenta para todos los participantes, excepto Aldi, quien no consumió.</p>
+        <p>Las conductoras no se deben entre sí por gastos de combustible</p>
+        <p>El combustible se divide solo entre los pasajeros de cada vehículo</p>
+        <p>Las conductoras no cuentan las bebidas con alcohol, pero sí las sin alcohol</p>
+        <p>La comida se cuenta para todos excepto Aldi</p>
         <p>¡Lxs quiero mucho! ❤️</p>
-        <p><strong>Operación Matemática:</strong></p>
-        <p>Para calcular cuánto debe cada usuario, se realizó la siguiente operación:</p>
-        <p>1. Se sumaron todos los gastos de cada usuario.</p>
-        <p>2. Se calculó el total de gastos y se dividió entre el número de participantes.</p>
-        <p>3. La diferencia entre lo que cada usuario pagó y su parte proporcional es lo que debe o le deben.</p>
-        <p style="color: #ff5733;"><em>Nota:</em> Las conductoras no tienen deudas porque sus gastos de combustible y peaje se consideran al calcular sus aportes. Sin embargo, si sus gastos totales exceden lo que deberían pagar, podrían tener deudas.</p>
-      </div>
-    `;
+        <p style="color: #ff5733;"><em>Nota:</em> Los gastos de combustible aparecen en el balance del conductor pero se compensan con los pagos de los pasajeros</p>
+      </div>`;
 
     document.getElementById("purchaseDetailsContainer").innerHTML =
       purchaseDetailsHTML;
@@ -688,15 +637,15 @@ function drawItems() {
   database.ref("gastos").once("value", (snapshot) => {
     const data = snapshot.val() || {};
     let html = '<div class="item-list">';
+
     Object.entries(data).forEach(([id, item]) => {
       if (item.categoria === currentCategory) {
         html += `
           <div class="item" style="background: ${item.color}40">
             <div>
-              ${item.icon} 
-              <strong>${item.nombre}</strong><br>
+              ${item.icon} <strong>${item.nombre}</strong><br>
               ${item.item} (${item.categoria}${
-          currentCategory === "bebidas" && item.hasOwnProperty("alcohol")
+          item.alcohol !== undefined
             ? item.alcohol
               ? " - Con alcohol"
               : " - Sin alcohol"
@@ -710,10 +659,10 @@ function drawItems() {
                 <button onclick="deleteItem('${id}')">🗑️</button>
               </div>
             </div>
-          </div>
-        `;
+          </div>`;
       }
     });
+
     html += "</div>";
     document.getElementById("content").innerHTML = html;
     updatePurchaseList();
@@ -724,6 +673,5 @@ function drawItems() {
 document.addEventListener("DOMContentLoaded", function () {
   renderForm();
   drawItems();
-  // Listener en tiempo real para actualizar los datos sin recargar
   database.ref("gastos").on("value", drawItems);
 });
