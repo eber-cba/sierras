@@ -485,6 +485,12 @@ function calculateBalances(data) {
   // Calcular gastos válidos
   Object.values(data).forEach((item) => {
     const user = item.nombre;
+
+    // Excluir a Aldi de los gastos de comida
+    if (user === "Aldi" && item.categoria === "comida") {
+      return; // No contar los gastos de comida de Aldi
+    }
+
     if (
       ["comida", "bebidas", "otros", "peaje", "nafta"].includes(item.categoria)
     ) {
@@ -653,7 +659,7 @@ function renderPurchaseDetails() {
         <h4 style="color: var(--color-titulo);">💖 Aclaraciones</h4>
         <p>Las deudas mostradas son solo para comida y bebidas.</p>
         <p>Las conductoras no cuentan las bebidas con alcohol, pero sí las sin alcohol.</p>
-        <p>La comida se cuenta para todos los participantes.</p>
+        <p>La comida se cuenta para todos los participantes, excepto Aldi, quien no consumió.</p>
         <p>¡Lxs quiero mucho! ❤️</p>
         <p><strong>Operación Matemática:</strong></p>
         <p>Para calcular cuánto debe cada usuario, se realizó la siguiente operación:</p>

@@ -57,12 +57,12 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 .category-tabs {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 5px;
   margin-bottom: 15px;
 }
 .tab {
-  flex: 1;
   padding: 10px;
   border: none;
   border-radius: 10px;
@@ -70,6 +70,7 @@ body {
   color: white;
   cursor: pointer;
   transition: background 0.3s;
+  text-align: center;
 }
 .tab:hover {
   background: var(--summer-green);
@@ -105,21 +106,32 @@ button:hover {
   background: var(--summer-orange);
 }
 .item-list {
-  background: white;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
   padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow-x: hidden;
 }
 .item {
   padding: 10px;
-  margin: 10px 0;
+  margin: 5px 0;
   border-radius: 8px;
+  background: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 .item div:first-child {
   max-width: 65%;
+}
+.item-actions {
+  display: flex;
+  gap: 5px;
 }
 .item-actions button {
   margin-left: 5px;
@@ -381,6 +393,21 @@ button:hover {
 
   #purchaseList p {
     font-size: 0.9em;
+  }
+
+  .item-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .item {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .item-actions {
+    justify-content: flex-end;
+    width: 100%;
   }
 }
 
