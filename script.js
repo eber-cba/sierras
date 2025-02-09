@@ -24,8 +24,8 @@ const users = {
   Eber: { color: "#bdb2ff", icon: "🦊" },
   Eva: { color: "#fdffb6", icon: "🐰" },
   Carito: { color: "#caffbf", icon: "🐻" },
-  Josefina: { color: "#ffd6a5", icon: "🐯" }, // Conductora
-  Aldi: { color: "#ffc6ff", icon: "🐧" }, // Conductora
+  Josefina: { color: "#ffd6a5", icon: "🐯", isDriver: true },
+  Aldi: { color: "#ffc6ff", icon: "🐧", isDriver: true },
   Fer: { color: "#a8dadc", icon: "👨‍🔧" },
 };
 
@@ -460,109 +460,210 @@ function updatePurchaseList() {
   });
 }
 
-// Función para renderizar los detalles de compras (lista simple)
+// Función para calcular balances
+function calculateBalances(data) {
+  let validExpenses = {
+    totalFood: 0,
+    totalNonAlcDrinks: 0,
+    totalAlcDrinks: 0,
+    totalOthers: 0,
+    userContributions: {},
+  };
+
+  // Inicializar contribuciones
+  Object.keys(users).forEach((user) => {
+    validExpenses.userContributions[user] = {
+      food: 0,
+      nonAlcDrinks: 0,
+      alcDrinks: 0,
+      others: 0,
+      total: 0,
+      items: [], // Para almacenar los elementos comprados
+    };
+  });
+
+  // Calcular gastos válidos
+  Object.values(data).forEach((item) => {
+    const user = item.nombre;
+    if (
+      ["comida", "bebidas", "otros", "peaje", "nafta"].includes(item.categoria)
+    ) {
+      switch (item.categoria) {
+        case "comida":
+          validExpenses.totalFood += item.precio;
+          validExpenses.userContributions[user].food += item.precio;
+          validExpenses.userContributions[user].total += item.precio;
+          validExpenses.userContributions[user].items.push(item.item);
+          break;
+
+        case "bebidas":
+          if (item.alcohol) {
+            validExpenses.totalAlcDrinks += item.precio;
+            if (!users[user].isDriver) {
+              validExpenses.userContributions[user].alcDrinks += item.precio;
+              validExpenses.userContributions[user].total += item.precio;
+              validExpenses.userContributions[user].items.push(item.item);
+            }
+          } else {
+            validExpenses.totalNonAlcDrinks += item.precio;
+            validExpenses.userContributions[user].nonAlcDrinks += item.precio;
+            validExpenses.userContributions[user].total += item.precio;
+            validExpenses.userContributions[user].items.push(item.item);
+          }
+          break;
+
+        case "otros":
+          validExpenses.totalOthers += item.precio;
+          validExpenses.userContributions[user].others += item.precio;
+          validExpenses.userContributions[user].total += item.precio;
+          validExpenses.userContributions[user].items.push(item.item);
+          break;
+
+        case "peaje":
+        case "nafta":
+          // Las conductoras no deben pagar por estos gastos
+          validExpenses.userContributions[user].total += item.precio;
+          validExpenses.userContributions[user].items.push(item.item);
+          break;
+      }
+    }
+  });
+
+  // Calcular deudas
+  const balances = {};
+  Object.keys(users).forEach((user) => {
+    balances[user] = 0; // Inicializar saldo
+  });
+
+  // Calcular cuánto debe cada usuario a los demás
+  Object.entries(validExpenses.userContributions).forEach(
+    ([user, contributions]) => {
+      const totalPaid = contributions.total;
+      const totalShare =
+        (validExpenses.totalFood +
+          validExpenses.totalNonAlcDrinks +
+          validExpenses.totalAlcDrinks +
+          validExpenses.totalOthers) /
+        Object.keys(users).length;
+
+      const balance = totalPaid - totalShare;
+      balances[user] = balance; // Guardar el saldo del usuario
+    }
+  );
+
+  // Crear un objeto para mostrar a quién debe cada usuario
+  const debts = {};
+  Object.keys(users).forEach((user) => {
+    debts[user] = [];
+    if (balances[user] < 0) {
+      const amountOwed = Math.abs(balances[user]);
+      Object.entries(validExpenses.userContributions).forEach(
+        ([creditor, contributions]) => {
+          if (balances[creditor] > 0) {
+            // Asegurarse de que las conductoras no deban a quienes compraron bebidas con alcohol
+            if (users[user].isDriver && contributions.alcDrinks > 0) {
+              return; // No deben nada si son conductoras y el acreedor compró alcohol
+            }
+            const creditorShare =
+              (contributions.total /
+                (validExpenses.totalFood +
+                  validExpenses.totalNonAlcDrinks +
+                  validExpenses.totalAlcDrinks +
+                  validExpenses.totalOthers)) *
+              amountOwed;
+            debts[user].push({ creditor, amount: creditorShare.toFixed(2) });
+          }
+        }
+      );
+    }
+  });
+
+  return { validExpenses, balances, debts };
+}
+
+// Función para renderizar los detalles de compras
 function renderPurchaseDetails() {
   const dbRef = firebase.database().ref("gastos");
   dbRef.once("value", (snapshot) => {
     const data = snapshot.val() || {};
-    let purchaseDetailsHTML = `<h4>Detalles de Compras</h4><div id="purchaseList">`;
+    const { validExpenses, balances, debts } = calculateBalances(data);
 
-    // Acumuladores para total y contribuciones
-    let totalSpent = 0;
-    let userContributions = {};
-    let foodContributions = {};
+    let purchaseDetailsHTML = `
+      <div class="division-section">
+        <h3 style="color: var(--color-titulo);">🧾 Resumen de Gastos y Deudas</h3>
+        <div class="totals">
+          <h4>Total Gastado:</h4>
+          <p>Comida: $${validExpenses.totalFood.toFixed(2)}</p>
+          <p>Bebidas sin alcohol: $${validExpenses.totalNonAlcDrinks.toFixed(
+            2
+          )}</p>
+          <p>Bebidas con alcohol: $${validExpenses.totalAlcDrinks.toFixed(
+            2
+          )}</p>
+          <p>Otros: $${validExpenses.totalOthers.toFixed(2)}</p>
+        </div>
+    `;
 
-    // Inicializar todos los usuarios
-    Object.keys(users).forEach((user) => {
-      userContributions[user] = {
-        totalSpent: 0,
-        items: [],
-        isConductor: users[user].icon === "🐯" || users[user].icon === "🐧", // Conductoras
-      };
+    // Tarjetas de usuarios
+    purchaseDetailsHTML += '<div class="user-cards">';
+    Object.entries(users).forEach(([user, data]) => {
+      const contributions = validExpenses.userContributions[user];
+      purchaseDetailsHTML += `
+        <div class="user-card" style="background: ${data.color}20">
+          <h5>${data.icon} ${user}</h5>
+          <p>Comida: $${contributions.food.toFixed(2)}</p>
+          <p>Bebidas sin alcohol: $${contributions.nonAlcDrinks.toFixed(2)}</p>
+          ${
+            !data.isDriver
+              ? `<p>Bebidas con alcohol: $${contributions.alcDrinks.toFixed(
+                  2
+                )}</p>`
+              : ""
+          }
+          <p>Otros: $${contributions.others.toFixed(2)}</p>
+          <hr>
+          <p>Total aportado: <strong>$${contributions.total.toFixed(
+            2
+          )}</strong></p>
+          <p>Elementos comprados: ${contributions.items.join(", ")}</p>
+        </div>
+      `;
     });
+    purchaseDetailsHTML += "</div>";
 
-    Object.entries(data).forEach(([id, item]) => {
-      totalSpent += item.precio; // Sumar al total
-      userContributions[item.nombre].totalSpent += item.precio;
-      userContributions[item.nombre].items.push(item);
-
-      // Acumular contribuciones de comida y bebidas
-      if (
-        item.categoria !== "peaje" &&
-        item.categoria !== "nafta" &&
-        item.categoria !== "estacionamiento"
-      ) {
-        if (!foodContributions[item.nombre]) {
-          foodContributions[item.nombre] = 0;
-        }
-        foodContributions[item.nombre] += item.precio;
+    // Deudas
+    purchaseDetailsHTML += '<div class="balances">';
+    Object.entries(debts).forEach(([user, debtList]) => {
+      if (debtList.length > 0) {
+        debtList.forEach(({ creditor, amount }) => {
+          purchaseDetailsHTML += `
+            <div class="debt">
+              <strong>${users[user].icon} ${user}</strong> debe: <strong>$${amount}</strong> a <strong>${creditor}</strong>
+            </div>
+          `;
+        });
       }
     });
 
-    // Mostrar total gastado
-    purchaseDetailsHTML += `<p>Total Gastado: <strong>$${totalSpent.toFixed(
-      2
-    )}</strong></p>`;
+    purchaseDetailsHTML += "</div></div>";
 
-    // Mostrar contribuciones por usuario
-    for (const [user, contribution] of Object.entries(userContributions)) {
-      const balance = contribution.totalSpent - (foodContributions[user] || 0);
-      const status = balance >= 0 ? "A favor" : "Debe";
-      const balanceAmount = Math.abs(balance).toFixed(2);
-      purchaseDetailsHTML += `<div class="user-details">
-        <h5>${user} ${
-        contribution.isConductor ? "(Conductora, no cuenta con alcohol)" : ""
-      }</h5>
-        <p>Total Gastado: $${contribution.totalSpent.toFixed(2)}</p>
-        <p>${status}: $${balanceAmount}</p>
-        <div class="items-list">`;
+    // Sección de aclaraciones
+    purchaseDetailsHTML += `
+      <div class="aclaraciones">
+        <h4 style="color: var(--color-titulo);">💖 Aclaraciones</h4>
+        <p>Las deudas mostradas son solo para comida y bebidas.</p>
+        <p>Las conductoras no cuentan las bebidas con alcohol, pero sí las sin alcohol.</p>
+        <p>La comida se cuenta para todos los participantes.</p>
+        <p>¡Lxs quiero mucho! ❤️</p>
+        <p><strong>Operación Matemática:</strong></p>
+        <p>Para calcular cuánto debe cada usuario, se realizó la siguiente operación:</p>
+        <p>1. Se sumaron todos los gastos de cada usuario.</p>
+        <p>2. Se calculó el total de gastos y se dividió entre el número de participantes.</p>
+        <p>3. La diferencia entre lo que cada usuario pagó y su parte proporcional es lo que debe o le deben.</p>
+        <p style="color: #ff5733;"><em>Nota:</em> Las conductoras no tienen deudas porque sus gastos de combustible y peaje se consideran al calcular sus aportes. Sin embargo, si sus gastos totales exceden lo que deberían pagar, podrían tener deudas.</p>
+      </div>
+    `;
 
-      contribution.items.forEach((item) => {
-        purchaseDetailsHTML += `
-          <div class="purchase-item">
-            <span class="icon">${item.icon}</span> ${
-          item.item
-        } - $${item.precio.toFixed(2)} (${item.categoria})
-          </div>
-        `;
-      });
-
-      purchaseDetailsHTML += `</div></div>`;
-    }
-
-    // Mostrar contribuciones de comida y bebidas
-    for (const [user, spent] of Object.entries(foodContributions)) {
-      purchaseDetailsHTML += `<h5>${user} (Comida y Bebidas)</h5>`;
-      purchaseDetailsHTML += `<p>Total Gastado: $${spent.toFixed(2)}</p>`;
-    }
-
-    // Mostrar usuarios que no han pagado
-    const unpaidUsers = Object.keys(userContributions).filter(
-      (user) => userContributions[user].totalSpent === 0
-    );
-
-    if (unpaidUsers.length > 0) {
-      purchaseDetailsHTML += `<h5>Usuarios que no han pagado:</h5>`;
-      purchaseDetailsHTML += `<p>${unpaidUsers.join(", ")}</p>`;
-    } else {
-      purchaseDetailsHTML += `<p>No hay usuarios que deban.</p>`;
-    }
-
-    // Mostrar a quién se le debe pagar
-    purchaseDetailsHTML += `<h5>Deudas:</h5>`;
-    Object.entries(userContributions).forEach(([user, contribution]) => {
-      const balance = contribution.totalSpent - (foodContributions[user] || 0);
-      if (balance < 0) {
-        purchaseDetailsHTML += `<p>${user} debe pagar: $${Math.abs(
-          balance
-        ).toFixed(2)} a ${user}</p>`;
-      }
-    });
-
-    // Breve explicación de la división
-    purchaseDetailsHTML += `<p><strong>Resumen de la división:</strong> Se ha dividido el total de gastos entre los participantes, considerando las contribuciones de cada uno en comida y bebidas.</p>`;
-
-    purchaseDetailsHTML += `</div>`;
     document.getElementById("purchaseDetailsContainer").innerHTML =
       purchaseDetailsHTML;
   });

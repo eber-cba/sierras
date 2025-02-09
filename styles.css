@@ -1,23 +1,32 @@
 :root {
-  --color-verde: #36ba98;
-  --color-amarillo: #e9c46a;
-  --color-naranja: #f4a261;
-  --color-rojo: #e76f51;
+  --color-verde: #72baa9;
+  --color-amarillo: #ffeb3b;
+  --color-naranja: #ff9800;
+  --color-rojo: #f44336;
+  --color-fondo: #474e93;
+  --color-titulo: #7e5cad;
+  --color-card: #d5e7b5;
   --summer-yellow: #fff3b0;
   --summer-orange: #ff6b35;
   --summer-blue: #5da9e9;
   --summer-green: #6a994e;
 }
 body {
-  font-family: "Comic Neue", cursive;
-  background: linear-gradient(45deg, #e9c46a, #f4a261);
+  font-family: "Roboto", sans-serif;
+  background: var(--color-fondo);
   margin: 0;
   padding: 20px;
-  color: #2f3e46;
+  color: #333;
+  font-size: 16px;
 }
 .container {
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: #d5e7b5;
 }
 .title {
   text-align: center;
@@ -316,4 +325,90 @@ button:hover {
 .icon {
   margin-right: 5px; /* Espacio entre el ícono y el texto */
   vertical-align: middle; /* Alinear verticalmente el ícono */
+}
+
+/* Estilo para los títulos */
+#purchaseList h5 {
+  color: var(--color-rojo); /* Color llamativo para los títulos */
+  text-align: center; /* Centrar el título */
+}
+
+/* Estilo para los párrafos */
+#purchaseList p {
+  margin: 5px 0;
+  color: #333; /* Color más oscuro para el texto */
+  text-align: center; /* Centrar el texto */
+}
+
+/* Estilos para las tarjetas de usuario */
+.user-card {
+  background: var(--color-card);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.user-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.user-card h5 {
+  margin: 0;
+  color: var(--color-titulo);
+}
+
+.user-card p {
+  margin: 5px 0;
+  color: #333;
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
+
+  .user-card {
+    padding: 8px;
+    margin: 4px;
+  }
+
+  #purchaseList h5 {
+    font-size: 1.2em;
+  }
+
+  #purchaseList p {
+    font-size: 0.9em;
+  }
+}
+
+.aclaraciones {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.aclaraciones:hover {
+  transform: scale(1.02);
+}
+
+.aclaraciones h4 {
+  color: var(--color-titulo);
+  text-align: center;
+  font-family: "Arial", sans-serif; /* Cambiar a una tipografía más atractiva */
+  font-size: 1.5em; /* Tamaño de fuente más grande */
+  margin-bottom: 10px; /* Espacio debajo del título */
+}
+
+.aclaraciones p {
+  color: #333;
+  text-align: center;
+  margin: 5px 0;
+  font-family: "Arial", sans-serif; /* Cambiar a una tipografía más atractiva */
+  line-height: 1.5; /* Espaciado entre líneas */
 }
