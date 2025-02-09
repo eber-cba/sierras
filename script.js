@@ -320,13 +320,13 @@ function updatePurchaseList() {
         members: ["Gabi", "Jere", "Eber"],
         fuelTotal: 0,
         autoExpenses: [],
-        totalPaid: 0, // Total pagado por Josefina
+        totalPaid: 0,
       },
       Aldi: {
         members: ["Eva", "Carito", "Fer"],
         fuelTotal: 0,
         autoExpenses: [],
-        totalPaid: 0, // Total pagado por Aldi
+        totalPaid: 0,
       },
     };
 
@@ -338,14 +338,14 @@ function updatePurchaseList() {
       });
     });
 
-    // Recorremos los ítems de auto: nafta, peaje y estacionamiento.
+    // Procesar los gastos
     for (let id in data) {
       const item = data[id];
       if (item.categoria === "nafta") {
         if (carGroups.hasOwnProperty(item.nombre)) {
           carGroups[item.nombre].fuelTotal += item.precio;
           autoPaid[item.nombre] += item.precio;
-          carGroups[item.nombre].totalPaid += item.precio; // Acumula el total pagado
+          carGroups[item.nombre].totalPaid += item.precio;
         }
       } else if (
         item.categoria === "peaje" ||
@@ -358,104 +358,80 @@ function updatePurchaseList() {
             type: item.categoria,
           });
           autoPaid[item.nombre] = (autoPaid[item.nombre] || 0) + item.precio;
-          carGroups[item.car].totalPaid += item.precio; // Acumula el total pagado
+          carGroups[item.car].totalPaid += item.precio;
         }
       }
     }
 
-    // --- GASTOS DE COMIDA Y BEBIDAS ---
-    let foodContributions = {};
-    let nonAlcoholTotal = 0;
-    let alcoholTotal = 0;
-    for (let id in data) {
-      const item = data[id];
-      if (
-        item.categoria !== "peaje" &&
-        item.categoria !== "nafta" &&
-        item.categoria !== "estacionamiento"
-      ) {
-        if (!foodContributions[item.nombre]) {
-          foodContributions[item.nombre] = 0;
-        }
-        foodContributions[item.nombre] += item.precio;
-        if (item.categoria === "bebidas") {
-          if (item.alcohol === true) {
-            alcoholTotal += item.precio;
-          } else {
-            nonAlcoholTotal += item.precio;
-          }
-        } else {
-          nonAlcoholTotal += item.precio;
-        }
-      }
-    }
-
-    // Calculamos la división para cada grupo
+    // Construir el HTML
     let autoDivisionHtml = `<div class="division-section">
-      <h3>🚗 Gastos de Auto (Peaje, Estacionamiento y Combustible)</h3>`;
+      <h3>🚗 Gastos de Auto</h3>`;
+
     for (let car in carGroups) {
       const group = carGroups[car];
       const members = group.members;
       const numMembers = members.length;
       const shareFuel = numMembers > 0 ? group.fuelTotal / numMembers : 0;
-      let expectedAuto = {};
-      members.forEach((m) => (expectedAuto[m] = shareFuel));
-      group.autoExpenses.forEach((exp) => {
-        if (members.includes(exp.payer) && numMembers > 1) {
-          members.forEach((m) => {
-            if (m !== exp.payer) {
-              expectedAuto[m] += exp.amount / (numMembers - 1);
-            }
-          });
-        }
-      });
 
-      // Descuenta el total pagado por cada miembro
-      members.forEach((m) => {
-        expectedAuto[m] -= foodContributions[m] || 0; // Descuenta contribuciones de comida
-      });
+      autoDivisionHtml += `
+        <div class="fuel-total">
+          <h4>${
+            car === "Josefina" ? "Auto de Josefina" : "Auto de Aldi"
+          } - Combustible total: $${group.fuelTotal.toFixed(2)}</h4>
+          <div class="division-explanation">
+            <p>🔧 División de gastos para ${members.join(", ")}:</p>
+            <p>• Combustible: $${group.fuelTotal.toFixed(
+              2
+            )} / ${numMembers} pasajeros = $${shareFuel.toFixed(
+        2
+      )} por persona</p>
+            ${group.autoExpenses
+              .map(
+                (exp) => `
+              <p>• ${exp.type} (Pagado por ${exp.payer}): 
+                $${exp.amount.toFixed(2)} dividido entre ${
+                  numMembers - 1
+                } pasajeros = $${(exp.amount / (numMembers - 1)).toFixed(2)} c/u
+              </p>`
+              )
+              .join("")}
+            <p>🍔 Comida/Bebidas: Cada persona paga individualmente lo que consumió</p>
+            <p>💡 Los pagos de cada persona en otras categorías se tienen en cuenta para el balance final</p>
+          </div>
+        </div>
 
-      autoDivisionHtml += `<h4>${
-        car === "Josefina" ? "Auto de Josefina" : "Auto de Aldi"
-      }</h4>`;
-      members.forEach((m) => {
-        const expected = expectedAuto[m];
-        const paid = autoPaid[m] || 0;
-        const diff = paid - expected;
-        const expensesPaid = group.autoExpenses.filter(
-          (exp) => exp.payer === m
-        );
-        let expenseInfo = "";
-        if (expensesPaid.length > 0) {
-          expenseInfo =
-            " (Pagó " +
-            expensesPaid
-              .map((exp) => {
-                return (
-                  (exp.type === "peaje" ? "Peaje: $" : "Estac: $") +
-                  exp.amount.toFixed(2)
-                );
-              })
-              .join(", ") +
-            ")";
-        }
-        autoDivisionHtml += `<div class="user-balance" style="background: ${
-          users[m].color
-        }40">
-          <div>
-            <strong>${users[m].icon} ${m}${expenseInfo}</strong><br>
-            Pagado: $${paid.toFixed(2)}<br>
-            Esperado: $${expected.toFixed(2)}
-          </div>
-          <div style="text-align: right;">
-            ${diff >= 0 ? "A favor:" : "Debe:"} $${Math.abs(diff).toFixed(2)}
-          </div>
+        <div class="members-balance">
+          ${members
+            .map((member) => {
+              const expected =
+                shareFuel +
+                group.autoExpenses
+                  .filter((exp) => exp.payer !== member)
+                  .reduce((sum, exp) => sum + exp.amount / (numMembers - 1), 0);
+
+              const paid = autoPaid[member] || 0;
+              const diff = paid - expected;
+
+              return `<div class="user-balance" style="background: ${
+                users[member].color
+              }20">
+              <div>
+                ${users[member].icon} ${member}<br>
+                Pagado: $${paid.toFixed(2)}<br>
+                Debe: $${expected.toFixed(2)}
+              </div>
+              <div class="${diff >= 0 ? "positive" : "negative"}">
+                ${diff >= 0 ? "A favor" : "A pagar"}: $${Math.abs(diff).toFixed(
+                2
+              )}
+              </div>
+            </div>`;
+            })
+            .join("")}
         </div>`;
-      });
     }
-    autoDivisionHtml += `</div>`;
 
-    // Actualizamos el contenedor de detalles de auto y comida.
+    autoDivisionHtml += `</div>`;
     document.getElementById("purchaseList").innerHTML = autoDivisionHtml;
   });
 }
