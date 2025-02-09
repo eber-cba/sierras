@@ -565,74 +565,96 @@ function renderPurchaseDetails() {
 
     let purchaseDetailsHTML = `
       <div class="division-section">
-        <h3 style="color: var(--color-titulo);">🧾 Resumen de Gastos y Deudas</h3>
-        <div class="totals">
-          <h4>Total Gastado:</h4>
-          <p>Comida: $${validExpenses.totalFood.toFixed(2)}</p>
-          <p>Bebidas sin alcohol: $${validExpenses.totalNonAlcDrinks.toFixed(
-            2
-          )}</p>
-          <p>Bebidas con alcohol: $${validExpenses.totalAlcDrinks.toFixed(
-            2
-          )}</p>
-          <p>Otros: $${validExpenses.totalOthers.toFixed(2)}</p>
-        </div>
-        <div class="user-cards">`;
+        <h3 style="color: var(--color-titulo); margin-bottom: 20px;">🧾 Deudas por Comida y Bebidas</h3>
+        <div class="debt-container">`;
 
-    Object.entries(users).forEach(([user, data]) => {
-      const contributions = validExpenses.userContributions[user];
+    // Generar tarjetas de deudas para cada usuario
+    Object.entries(users).forEach(([user, userData]) => {
+      const userDebts = debts[user];
+      const userBalance = balances[user];
+      const isDriver = userData.isDriver;
+
       purchaseDetailsHTML += `
-        <div class="user-card" style="background: ${data.color}20">
-          <h5>${data.icon} ${user}</h5>
-          <p>Comida: $${contributions.food.toFixed(2)}</p>
-          <p>Bebidas sin alcohol: $${contributions.nonAlcDrinks.toFixed(2)}</p>
-          ${
-            !data.isDriver
-              ? `<p>Bebidas con alcohol: $${contributions.alcDrinks.toFixed(
-                  2
-                )}</p>`
-              : ""
+        <div class="debt-card" style="border-color: ${userData.color}">
+          <div class="debt-header" style="background: ${userData.color}20">
+            <span style="background: ${userData.color}">${userData.icon}</span>
+            <h4>${user} ${isDriver ? "🚗" : ""}</h4>
+            <div class="balance-status ${
+              userBalance >= 0 ? "positive" : "negative"
+            }">
+              $${Math.abs(userBalance).toFixed(2)}
+              ${userBalance >= 0 ? "Recibe" : "Debe"}
+            </div>
+          </div>`;
+
+      if (userDebts.length > 0) {
+        purchaseDetailsHTML += `<div class="debt-list">`;
+        userDebts.forEach(({ creditor, amount, reason }) => {
+          // Filtrar solo deudas de comida/bebida
+          const foodDrinkItems = reason
+            .split(", ")
+            .filter(
+              (item) =>
+                !["Combustible", "Peaje", "Estacionamiento"].includes(item)
+            );
+
+          if (foodDrinkItems.length > 0) {
+            purchaseDetailsHTML += `
+              <div class="debt-item">
+                <div class="creditor-info">
+                  ${users[creditor].icon} ${creditor}
+                  <span class="debt-amount">$${amount}</span>
+                </div>
+                <div class="debt-reason">
+                  ${foodDrinkItems
+                    .map(
+                      (item) => `
+                    <span class="item-category ${
+                      item.includes("bebida") || item.includes("Bebida")
+                        ? "drink"
+                        : "food"
+                    }">${item}</span>
+                  `
+                    )
+                    .join("")}
+                </div>
+              </div>`;
           }
-          <p>Otros: $${contributions.others.toFixed(2)}</p>
-          <hr>
-          <p>Total aportado: <strong>$${contributions.total.toFixed(
-            2
-          )}</strong></p>
-          <p>Elementos comprados: ${contributions.items.join(", ")}</p>
-        </div>`;
-    });
-
-    purchaseDetailsHTML += `</div><div class="balances">`;
-
-    Object.entries(debts).forEach(([user, debtList]) => {
-      if (debtList.length > 0) {
-        debtList.forEach(({ creditor, amount, reason }) => {
-          purchaseDetailsHTML += `
-            <div class="debt">
-              <strong>${users[user].icon} ${user}</strong> debe: 
-              <strong>$${amount}</strong> a 
-              <strong>${creditor}</strong> por: ${reason}
-            </div>`;
         });
+        purchaseDetailsHTML += `</div>`;
+      } else {
+        purchaseDetailsHTML += `
+          <div class="no-debt">
+            ${user === "Aldi" ? "🚫 No consumió comida" : "✅ Todo balanceado"}
+          </div>`;
       }
+
+      purchaseDetailsHTML += `</div>`; // Cierre debt-card
     });
 
-    purchaseDetailsHTML += `</div></div>
-      <div class="aclaraciones">
-        <h4 style="color: var(--color-titulo);">💖 Aclaraciones</h4>
-        <p>Las conductoras no se deben entre sí por gastos de combustible</p>
-        <p>El combustible se divide solo entre los pasajeros de cada vehículo</p>
-        <p>Las conductoras no cuentan las bebidas con alcohol, pero sí las sin alcohol</p>
-        <p>La comida se cuenta para todos excepto Aldi</p>
-        <p>¡Lxs quiero mucho! ❤️</p>
-        <p style="color: #ff5733;"><em>Nota:</em> Los gastos de combustible aparecen en el balance del conductor pero se compensan con los pagos de los pasajeros</p>
+    purchaseDetailsHTML += `
+        </div>
+        <div class="aclaraciones">
+          <h4>💡 Cómo se calcula:</h4>
+          <ul>
+            <li>Total gastado en comida/bebidas ÷ ${
+              Object.keys(users).length
+            } personas</li>
+            <li>Aldi no participa en gastos de comida 🚫</li>
+            <li>Conductoras no pagan bebidas con alcohol 🚗</li>
+            <li>Deudas entre conductoras por combustible se excluyen ⛽</li>
+          </ul>
+          <div class="leyenda">
+            <span class="leyenda-item"><div class="food-dot"></div> Comida</span>
+            <span class="leyenda-item"><div class="drink-dot"></div> Bebida</span>
+          </div>
+        </div>
       </div>`;
 
     document.getElementById("purchaseDetailsContainer").innerHTML =
       purchaseDetailsHTML;
   });
 }
-
 function drawItems() {
   database.ref("gastos").once("value", (snapshot) => {
     const data = snapshot.val() || {};

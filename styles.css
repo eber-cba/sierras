@@ -439,3 +439,130 @@ button:hover {
   font-family: "Arial", sans-serif; /* Cambiar a una tipografía más atractiva */
   line-height: 1.5; /* Espaciado entre líneas */
 }
+.debt-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.debt-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.debt-header {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.debt-header h4 {
+  margin: 0;
+  flex-grow: 1;
+}
+
+.debt-header span {
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 1.2em;
+}
+
+.balance-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.balance-status.positive {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.balance-status.negative {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+.debt-list {
+  padding: 15px;
+  background: #f8f9fa;
+}
+
+.debt-item {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.debt-item:last-child {
+  border-bottom: none;
+}
+
+.debt-amount {
+  font-weight: bold;
+  color: #c62828;
+}
+
+.debt-reason {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.item-category {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+}
+
+.item-category.food {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.item-category.drink {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.no-debt {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+.leyenda {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9em;
+}
+
+.food-dot,
+.drink-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.food-dot {
+  background: #ef6c00;
+}
+
+.drink-dot {
+  background: #1565c0;
+}
