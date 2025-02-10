@@ -566,3 +566,174 @@ button:hover {
 .drink-dot {
   background: #1565c0;
 }
+/* Estilos generales */
+:root {
+  --color-verde: #72baa9;
+  --color-amarillo: #ffeb3b;
+  --color-naranja: #ff9800;
+  --color-rojo: #f44336;
+  --color-fondo: #474e93;
+  --color-titulo: #7e5cad;
+  --color-card: #d5e7b5;
+  --summer-yellow: #fff3b0;
+  --summer-orange: #ff6b35;
+  --summer-blue: #5da9e9;
+  --summer-green: #6a994e;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background: var(--color-fondo);
+  margin: 0;
+  padding: 20px;
+  color: #333;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: #d5e7b5;
+}
+
+.title {
+  text-align: center;
+  color: var(--color-rojo);
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 0px white;
+}
+
+/* ... (resto de estilos generales) */
+
+/* Estilos para celulares (media query) */
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+    padding: 10px; /* Reduce el padding en pantallas pequeñas */
+  }
+
+  .container {
+    padding: 10px; /* Reduce el padding del contenedor */
+  }
+
+  .title {
+    font-size: 1.5em; /* Reduce el tamaño del título */
+    margin-bottom: 10px;
+  }
+
+  .cars,
+  .reminders,
+  .form-container,
+  .item-list,
+  .division-section,
+  .aclaraciones {
+    padding: 10px; /* Reduce el padding de las secciones */
+    margin-bottom: 10px; /* Reduce el margen inferior */
+  }
+
+  .category-tabs {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* Dos columnas en pantallas pequeñas */
+    gap: 5px; /* Reduce el espacio entre las pestañas */
+    margin-bottom: 10px;
+  }
+
+  .tab {
+    padding: 8px; /* Reduce el padding de las pestañas */
+    font-size: 0.9em; /* Reduce el tamaño de la fuente */
+  }
+
+  input,
+  select,
+  button {
+    padding: 8px; /* Reduce el padding de los elementos del formulario */
+    font-size: 0.9em; /* Reduce el tamaño de la fuente */
+  }
+
+  .item-list {
+    grid-template-columns: repeat(
+      1,
+      1fr
+    ); /* Una columna en pantallas pequeñas */
+    gap: 5px; /* Reduce el espacio entre los items */
+  }
+
+  .item {
+    flex-direction: column; /* Dirección vertical en pantallas pequeñas */
+    align-items: flex-start; /* Alinea los items al inicio */
+  }
+
+  .item div:first-child {
+    max-width: 100%; /* Ocupa todo el ancho en pantallas pequeñas */
+    margin-bottom: 5px; /* Espacio entre los elementos del item */
+  }
+
+  .item-actions {
+    margin-top: 5px; /* Espacio entre los botones */
+    justify-content: flex-end; /* Alinea los botones al final */
+    width: 100%; /* Ocupa todo el ancho */
+  }
+
+  .debt-container {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(250px, 1fr)
+    ); /* Ajusta el ancho mínimo de las tarjetas */
+    gap: 10px; /* Reduce el espacio entre las tarjetas */
+  }
+
+  .debt-card,
+  .credit-card {
+    padding: 10px; /* Reduce el padding de las tarjetas */
+  }
+
+  .debt-header {
+    flex-direction: column; /* Dirección vertical en pantallas pequeñas */
+    align-items: flex-start; /* Alinea los elementos al inicio */
+    gap: 5px; /* Reduce el espacio entre los elementos */
+  }
+
+  .debt-header h4 {
+    font-size: 1.1em; /* Reduce el tamaño del título */
+  }
+
+  .debt-list {
+    padding: 10px; /* Reduce el padding de la lista de deudas */
+  }
+
+  .debt-item {
+    padding: 8px 0; /* Reduce el padding de los items de deuda */
+  }
+
+  .debt-amount {
+    font-size: 0.9em; /* Reduce el tamaño de la fuente */
+  }
+
+  .debt-reason {
+    font-size: 0.8em; /* Reduce el tamaño de la fuente */
+  }
+
+  .no-debt {
+    font-size: 0.9em; /* Reduce el tamaño de la fuente */
+    padding: 10px; /* Reduce el padding del mensaje */
+  }
+
+  .leyenda {
+    flex-direction: column; /* Dirección vertical en pantallas pequeñas */
+    align-items: center; /* Alinea los elementos al centro */
+    gap: 10px; /* Reduce el espacio entre los elementos */
+  }
+
+  .leyenda-item {
+    font-size: 0.8em; /* Reduce el tamaño de la fuente */
+  }
+
+  /* ... (resto de estilos para celulares) */
+}
