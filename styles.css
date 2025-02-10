@@ -11,6 +11,8 @@
   --summer-blue: #5da9e9;
   --summer-green: #6a994e;
 }
+
+/* Base y contenedores principales */
 body {
   font-family: "Roboto", sans-serif;
   background: var(--color-fondo);
@@ -19,15 +21,16 @@ body {
   color: #333;
   font-size: 16px;
 }
+
 .container {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--color-card);
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  background: #d5e7b5;
 }
+
 .title {
   text-align: center;
   color: var(--color-rojo);
@@ -35,6 +38,7 @@ body {
   margin-bottom: 20px;
   text-shadow: 2px 2px 0px white;
 }
+
 .cars {
   background: white;
   padding: 15px;
@@ -42,6 +46,7 @@ body {
   margin-bottom: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .reminders {
   background: #ffd6a5;
   padding: 15px;
@@ -49,19 +54,15 @@ body {
   margin: 20px 0;
   border: 2px dashed var(--summer-orange);
 }
-.profile-container {
-  background: white;
-  padding: 15px;
-  border-radius: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+
+/* Pestañas de categorías */
 .category-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 5px;
   margin-bottom: 15px;
 }
+
 .tab {
   padding: 10px;
   border: none;
@@ -71,13 +72,18 @@ body {
   cursor: pointer;
   transition: background 0.3s;
   text-align: center;
+  font-size: 0.9em;
 }
+
 .tab:hover {
   background: var(--summer-green);
 }
+
 .active-tab {
   background: var(--summer-orange);
 }
+
+/* Formulario y entradas */
 .form-container {
   background: white;
   padding: 15px;
@@ -85,6 +91,7 @@ body {
   margin-bottom: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 input,
 select,
 button {
@@ -94,7 +101,9 @@ button {
   border: 2px solid var(--summer-green);
   border-radius: 8px;
   box-sizing: border-box;
+  font-size: 1em;
 }
+
 button {
   background: var(--summer-green);
   color: white;
@@ -102,9 +111,12 @@ button {
   font-weight: bold;
   cursor: pointer;
 }
+
 button:hover {
   background: var(--summer-orange);
 }
+
+/* Listado de ítems */
 .item-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -116,6 +128,7 @@ button:hover {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   overflow-x: hidden;
 }
+
 .item {
   padding: 10px;
   margin: 5px 0;
@@ -126,76 +139,30 @@ button:hover {
   align-items: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
 .item div:first-child {
   max-width: 65%;
 }
+
 .item-actions {
   display: flex;
   gap: 5px;
 }
+
 .item-actions button {
   margin-left: 5px;
   padding: 5px 10px;
   border-radius: 5px;
   border: none;
   cursor: pointer;
+  font-size: 0.8em;
 }
+
 .item-actions button:hover {
   opacity: 0.8;
 }
-.accordion {
-  border: 1px solid var(--summer-blue);
-  border-radius: 8px;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-.accordion-header {
-  background: var(--summer-green);
-  padding: 10px;
-  cursor: pointer;
-  color: white;
-  font-weight: bold;
-  transition: background 0.3s;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.accordion-header:hover {
-  background: var(--summer-orange);
-}
-.accordion-content {
-  display: none;
-  padding: 10px;
-  background: white;
-}
-.accordion-content.active {
-  display: block;
-}
-.purchase-item {
-  margin: 5px 0;
-}
-.accordion-button {
-  background: var(--summer-blue);
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  width: 100%;
-  text-align: left;
-  transition: background 0.3s;
-}
-.accordion-button:hover {
-  background: var(--summer-green);
-}
-.total-section {
-  margin-top: 20px;
-  padding: 15px;
-  background: var(--summer-yellow);
-  border-radius: 10px;
-  border: 2px dashed var(--summer-orange);
-}
+
+/* Sección de división (gastos de auto, etc.) */
 .division-section {
   margin-top: 15px;
   padding: 15px;
@@ -203,6 +170,8 @@ button:hover {
   border-radius: 10px;
   border: 2px solid var(--summer-blue);
 }
+
+/* Balance de usuario */
 .user-balance {
   padding: 8px;
   margin: 5px 0;
@@ -212,11 +181,15 @@ button:hover {
   justify-content: space-between;
   align-items: center;
 }
+
+/* Elementos adicionales */
 .blurred {
   filter: blur(8px);
   pointer-events: none;
   transition: filter 0.3s ease;
 }
+
+/* Custom checkbox */
 .custom-checkbox {
   display: flex;
   align-items: center;
@@ -224,10 +197,13 @@ button:hover {
   font-size: 1em;
   margin-top: 10px;
 }
+
 .custom-checkbox input[type="checkbox"] {
   transform: scale(1.5);
   accent-color: var(--summer-green);
 }
+
+/* Registered profiles */
 .registered-profiles {
   margin-top: 20px;
   padding: 10px;
@@ -235,14 +211,18 @@ button:hover {
   background: #f9f9f9;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 .profile-item {
   padding: 5px;
   margin: 5px 0;
   border-bottom: 1px solid #ddd;
 }
+
 .profile-item:last-child {
   border-bottom: none;
 }
+
+/* Custom radio buttons */
 .custom-radio {
   display: flex;
   gap: 20px;
@@ -252,6 +232,7 @@ button:hover {
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 .custom-radio label {
   display: flex;
   align-items: center;
@@ -261,41 +242,48 @@ button:hover {
   border-radius: 8px;
   transition: background 0.3s, border 0.3s;
 }
+
 .custom-radio input[type="radio"] {
   display: none;
 }
+
 .radio-button {
   margin-left: 10px;
 }
+
 .custom-radio input[type="radio"]:checked + .radio-button {
   background: var(--summer-green);
   color: white;
   border-color: var(--summer-orange);
 }
+
 .radio-button::before {
   content: "🍹";
   margin-right: 5px;
 }
+
 .radio-button:nth-of-type(2)::before {
   content: "🚫";
 }
+
 .selected {
   background-color: #ffd6a5;
 }
-/* Estilos para la sección de detalles de compras */
+
+/* User details (opcional) */
 .user-details {
-  background: #f0f8ff; /* Color más claro y atractivo */
+  background: #f0f8ff;
   border-radius: 10px;
   padding: 15px;
   margin: 10px 0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  border-left: 5px solid var(--color-verde); /* Color llamativo */
+  border-left: 5px solid var(--color-verde);
 }
 
 .user-details h5 {
   margin: 0;
   color: var(--color-rojo);
-  text-align: center; /* Centrar el título */
+  text-align: center;
 }
 
 .user-details p {
@@ -303,6 +291,7 @@ button:hover {
   color: #555;
 }
 
+/* Purchase items list (opcional) */
 .items-list {
   margin-top: 10px;
   padding: 10px;
@@ -317,42 +306,30 @@ button:hover {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo para el resumen de la división */
+/* Resumen de división en #purchaseList */
 #purchaseList p {
   font-weight: bold;
-  color: var(--color-verde); /* Color llamativo para el resumen */
+  color: var(--color-verde);
 }
 
-/* Estilo para la sección de deudas */
 #purchaseList h5 {
-  color: var(--color-rojo); /* Color llamativo para la sección de deudas */
+  color: var(--color-rojo);
+  text-align: center;
 }
 
 #purchaseList p {
   margin: 5px 0;
-  color: #333; /* Color más oscuro para el texto de deudas */
+  color: #333;
+  text-align: center;
 }
 
-/* Estilos para los íconos */
+/* Íconos */
 .icon {
-  margin-right: 5px; /* Espacio entre el ícono y el texto */
-  vertical-align: middle; /* Alinear verticalmente el ícono */
+  margin-right: 5px;
+  vertical-align: middle;
 }
 
-/* Estilo para los títulos */
-#purchaseList h5 {
-  color: var(--color-rojo); /* Color llamativo para los títulos */
-  text-align: center; /* Centrar el título */
-}
-
-/* Estilo para los párrafos */
-#purchaseList p {
-  margin: 5px 0;
-  color: #333; /* Color más oscuro para el texto */
-  text-align: center; /* Centrar el texto */
-}
-
-/* Estilos para las tarjetas de usuario */
+/* Tarjetas de usuario */
 .user-card {
   background: var(--color-card);
   border-radius: 10px;
@@ -377,40 +354,7 @@ button:hover {
   color: #333;
 }
 
-@media (max-width: 600px) {
-  body {
-    font-size: 14px;
-  }
-
-  .user-card {
-    padding: 8px;
-    margin: 4px;
-  }
-
-  #purchaseList h5 {
-    font-size: 1.2em;
-  }
-
-  #purchaseList p {
-    font-size: 0.9em;
-  }
-
-  .item-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .item {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-  }
-
-  .item-actions {
-    justify-content: flex-end;
-    width: 100%;
-  }
-}
-
+/* Aclaraciones y explicaciones */
 .aclaraciones {
   background: #fff;
   border-radius: 10px;
@@ -427,18 +371,20 @@ button:hover {
 .aclaraciones h4 {
   color: var(--color-titulo);
   text-align: center;
-  font-family: "Arial", sans-serif; /* Cambiar a una tipografía más atractiva */
-  font-size: 1.5em; /* Tamaño de fuente más grande */
-  margin-bottom: 10px; /* Espacio debajo del título */
+  font-family: "Arial", sans-serif;
+  font-size: 1.5em;
+  margin-bottom: 10px;
 }
 
 .aclaraciones p {
   color: #333;
   text-align: center;
   margin: 5px 0;
-  font-family: "Arial", sans-serif; /* Cambiar a una tipografía más atractiva */
-  line-height: 1.5; /* Espaciado entre líneas */
+  font-family: "Arial", sans-serif;
+  line-height: 1.5;
 }
+
+/* Sección de deudas y balances */
 .debt-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -464,6 +410,7 @@ button:hover {
 .debt-header h4 {
   margin: 0;
   flex-grow: 1;
+  font-size: 1.1em;
 }
 
 .debt-header span {
@@ -538,6 +485,7 @@ button:hover {
   font-style: italic;
 }
 
+/* Leyenda */
 .leyenda {
   margin-top: 20px;
   display: flex;
@@ -565,4 +513,128 @@ button:hover {
 
 .drink-dot {
   background: #1565c0;
+}
+
+/* Sección de compras (opcional) */
+.purchases-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.purchase-card {
+  border: 2px solid var(--summer-green);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.purchase-header {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.purchase-header h4 {
+  margin: 0;
+  font-size: 1.1em;
+}
+
+.alert-badge {
+  background: var(--color-amarillo);
+  color: #333;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 0.8em;
+  margin-left: auto;
+}
+
+.purchase-items {
+  padding: 10px;
+  background: #f8f9fa;
+  min-height: 80px;
+}
+
+.purchase-item {
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 8px;
+  font-size: 0.9em;
+}
+
+.purchase-item.food {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.purchase-item.drink {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.purchase-item.alcohol {
+  background: #fce4ec;
+  color: #c2185b;
+}
+
+.purchase-item.other {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Sección de balance final */
+.final-balance {
+  display: grid;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.balance-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.total-balance {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-weight: bold;
+}
+
+/* Responsividad */
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
+  .user-card {
+    padding: 8px;
+    margin: 4px;
+  }
+  #purchaseList h5 {
+    font-size: 1.2em;
+  }
+  #purchaseList p {
+    font-size: 0.9em;
+  }
+  .item-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .item {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+  .item-actions {
+    justify-content: flex-end;
+    width: 100%;
+  }
 }
