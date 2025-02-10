@@ -211,7 +211,7 @@ function saveItem() {
         clearForm();
       })
       .catch((error) =>
-        console.error("Error al guardar el item en Firebase:", error)
+        console.error("Error al guardar el ítem en Firebase:", error)
       );
   }
 }
