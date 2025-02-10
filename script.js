@@ -211,7 +211,7 @@ function saveItem() {
         clearForm();
       })
       .catch((error) =>
-        console.error("Error al guardar el item en Firebase:", error)
+        console.error("Error al guardar el ítem en Firebase:", error)
       );
   }
 }
@@ -425,7 +425,8 @@ function renderPurchaseDetails() {
     const sharedData = calculateDetailedDebts(data); // Para comida y bebidas
     const autoData = calculateAutoExpensesDetails(data); // Para gastos de auto
 
-    let purchaseDetailsHTML = `
+    // Sección: Detalle de Compras por Usuario
+    html += `
       <div class="division-section">
         <h3 style="color: var(--color-titulo); margin-bottom: 20px;">🧾 Deuda Total y Créditos</h3>
         <div class="info-section" style="margin-bottom:20px; padding:10px; border:1px solid #ccc; border-radius:8px;">
